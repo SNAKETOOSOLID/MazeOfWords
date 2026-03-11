@@ -16,6 +16,7 @@ class Game {
     WordManager wordManager_;
 
     std::string targetWord_;
+    std::string targetDefinition_;
     std::vector<bool> revealedLetters_;
     bool gameOver_ = false;
     bool win_ = false;
@@ -23,8 +24,30 @@ class Game {
     int stepCounter_ = 0;
     int scoreMultiplier_ = 1;
 
+    void processHint(size_t hintIndex);
+    void processFinalDoor();
+    int handleSingleStep(char dir);
+
+    std::optional<size_t> findHintIndexAt(int x, int y) const;
+    bool isFinalDoorAt(int x, int y) const;
+
+    int countRevealedLetters() const;
+    int getScoreMultiplier(int revealed) const;
+    bool isWordFullyRevealed() const;
+    void tryAutoOpenDoor();
+    char getOpenedDoorSymbol() const;
+
+    static void clearPendingNewlines();
+    static std::string readLineTrimmedSafe();
+    static std::optional<int> readOptionalIntLine();
+
+    void printFrameHeader() const;
+    void drawMazeOnly() const;
+    void drawFull() const;
+    void showVictoryScreen(bool& restartFlag, bool& exitFlag);
+
 public:
-    explicit Game(const std::vector<std::string>& words);
+    explicit Game(const std::vector<WordEntry>& entries);
     int handleKey(int key);
     void run(bool& restartFlag, bool& exitFlag);
 };
