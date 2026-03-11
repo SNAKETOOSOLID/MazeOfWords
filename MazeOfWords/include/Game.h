@@ -24,6 +24,11 @@ class Game {
     int stepCounter_ = 0;
     int scoreMultiplier_ = 1;
 
+    void printFrameHeader() const;
+    void drawMazeOnly() const;
+    void drawFull() const;
+    void showVictoryScreen(bool& restartFlag, bool& exitFlag);
+
     void processHint(size_t hintIndex);
     void processFinalDoor();
     int handleSingleStep(char dir);
@@ -40,11 +45,6 @@ class Game {
     static void clearPendingNewlines();
     static std::string readLineTrimmedSafe();
     static std::optional<int> readOptionalIntLine();
-
-    void printFrameHeader() const;
-    void drawMazeOnly() const;
-    void drawFull() const;
-    void showVictoryScreen(bool& restartFlag, bool& exitFlag);
 
 public:
     explicit Game(const std::vector<WordEntry>& entries);

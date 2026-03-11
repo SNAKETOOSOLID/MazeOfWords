@@ -1,17 +1,23 @@
 #pragma once
 
+#include "MultiplicationQuestion.h"
+
 class Entity {
 protected:
     int x_;
     int y_;
 
 public:
-    Entity(int x, int y);
+    Entity(int x, int y) : x_(x), y_(y) {}
     virtual ~Entity() = default;
 
-    int getX() const;
-    int getY() const;
-    void setPosition(int x, int y);
+    int getX() const { return x_; }
+    int getY() const { return y_; }
+
+    void setPosition(int x, int y) {
+        x_ = x;
+        y_ = y;
+    }
 
     virtual char getSymbol() const = 0;
 };
@@ -32,13 +38,46 @@ public:
 };
 
 class FinalDoor : public Entity {
+    bool opened_ = false;
+    char openedSymbol_ = 'X';
+
 public:
-    FinalDoor(int x, int y);
-    char getSymbol() const override;
+    FinalDoor(int x, int y) : Entity(x, y) {}
+
+    char getSymbol() const override {
+        return opened_ ? openedSymbol_ : 'X';
+    }
+
+    bool isOpened() const {
+        return opened_;
+    }
+
+    void open(char symbol) {
+        opened_ = true;
+        openedSymbol_ = symbol;
+    }
 };
 
 class Hint : public Entity {
+    bool collected_ = false;
+    MultiplicationQuestion question_;
+
 public:
-    Hint(int x, int y);
-    char getSymbol() const override;
+    Hint(int x, int y) : Entity(x, y) {}
+
+    char getSymbol() const override {
+        return collected_ ? ' ' : '?';
+    }
+
+    bool isCollected() const {
+        return collected_;
+    }
+
+    void collect() {
+        collected_ = true;
+    }
+
+    const MultiplicationQuestion& getQuestion() const {
+        return question_;
+    }
 };
