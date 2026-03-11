@@ -1,9 +1,15 @@
-#pragma once
+#include "ConsoleUtils.h"
 
-#include <string>
-#include <windows.h>
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-extern HANDLE hConsole;
+void setColor(WORD color) {
+    SetConsoleTextAttribute(hConsole, color);
+}
 
-void setColor(WORD color);
-std::string repeatText(const std::string& s, int count);
+std::string repeatText(const std::string& s, int count) {
+    std::string result;
+    for (int i = 0; i < count; ++i) {
+        result += s;
+    }
+    return result;
+}

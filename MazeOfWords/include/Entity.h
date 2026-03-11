@@ -17,9 +17,18 @@ public:
 };
 
 class Player : public Entity {
+    bool standingOnObject_ = false;
+
 public:
-    Player(int startX, int startY);
-    char getSymbol() const override;
+    Player(int startX, int startY) : Entity(startX, startY) {}
+
+    char getSymbol() const override {
+        return standingOnObject_ ? '.' : '@';
+    }
+
+    void setStandingOnObject(bool value) {
+        standingOnObject_ = value;
+    }
 };
 
 class FinalDoor : public Entity {
