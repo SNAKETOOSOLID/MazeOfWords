@@ -1,7 +1,7 @@
-#include "ConsoleUtils.h"
-#include "Config.h"
-
+#include "../include/ConsoleUtils.h"
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+const std::string H_WALL = "#";
 
 void setColor(WORD color) {
     SetConsoleTextAttribute(hConsole, color);
