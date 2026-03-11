@@ -4,14 +4,20 @@
 #include <string>
 #include <vector>
 
+struct WordEntry {
+    std::string word;
+    std::string definition;
+};
+
 class WordManager {
-    std::vector<std::string> wordList_;
-    std::string targetWord_;
+    std::vector<WordEntry> entries_;
+    WordEntry currentEntry_;
 
 public:
-    explicit WordManager(const std::vector<std::string>& words);
+    explicit WordManager(const std::vector<WordEntry>& entries);
 
     void chooseRandomWord();
     const std::string& getTargetWord() const;
+    const std::string& getTargetDefinition() const;
     std::optional<size_t> getRandomHiddenIndex(const std::vector<bool>& revealed);
 };
