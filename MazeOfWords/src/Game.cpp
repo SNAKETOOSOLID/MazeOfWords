@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <random>
 #include <stdexcept>
+#include <cctype>
 
 Game::Game(const std::vector<WordEntry>& entries)
         : wordManager_(entries),
@@ -111,6 +112,18 @@ void Game::printFrameHeader() const {
 void Game::drawFull() const {
     drawMazeOnly();
     setColor(COLOR_DEFAULT);
+    std::cout << "Word: ";
+    for (size_t i = 0; i < targetWord_.size(); ++i) {
+        if (revealedLetters_[i]) {
+            setColor(COLOR_LETTER);
+            std::cout << targetWord_[i] << ' ';
+        } else {
+            setColor(COLOR_DEFAULT);
+            std::cout << "_ ";
+        }
+    }
+    setColor(COLOR_DEFAULT);
+    std::cout << "\n";
     std::cout << "Controls: W/A/S/D move, R restart, Q exit\n";
     std::cout << "Door: ";
     setColor(COLOR_FINAL_DOOR_CLOSED);
@@ -164,10 +177,70 @@ int Game::handleSingleStep(char dir) {
     
     player_.setPosition(newX, newY);
     stepCounter_++;
-    player_.setStandingOnObject(false);
     
+    if (isFinalDoorAt(newX, newY)) {
+        processFinalDoor();
+        return 2;
+    }
+    
+    auto hintIndex = findHintIndexAt(newX, newY);
+    if (hintIndex.has_value()) {
+        processHint(*hintIndex);
+        return 2;
+    }
+    
+    player_.setStandingOnObject(false);
     return 0;
 }
+
+void Game::clearPendingNewlines() {
+    while (std::cin.peek() == '\n' || std::cin.peek() == '\r') {
+        std::cin.get();
+    }
+}
+std::string Game::readLineTrimmedSafe() {
+    clearPendingNewlines();
+    std::string s;
+    std::getline(std::cin, s);
+    while (!s.empty() && std::isspace(static_cast<unsigned
+    char>(s.front()))) {
+        s.erase(s.begin());
+    }
+    while (!s.empty() && std::isspace(static_cast<unsigned char>(s.back())))
+    {
+        s.pop_back();
+    }
+    return s;
+}
+std::optional<int> Game::readOptionalIntLine() {
+    clearPendingNewlines();
+    std::string s;
+    std::getline(std::cin, s);
+    if (s.empty()) {
+        return std::nullopt;
+    }
+    while (!s.empty() && std::isspace(static_cast<unsigned char>(s.front()))) {
+        s.erase(s.begin());
+    }
+    while (!s.empty() && std::isspace(static_cast<unsigned char>(s.back())))
+    {
+        s.pop_back();
+    }
+    if (s.empty()) {
+        return std::nullopt;
+    }
+    try {
+        size_t pos = 0;
+        int value = std::stoi(s, &pos);
+        if (pos != s.size()) {
+            return std::nullopt;
+        }
+        return value;
+    } catch (...) {
+        return std::nullopt;
+    }
+}
+
 
 int Game::handleKey(int key) {
     char c = static_cast<char>(tolower(static_cast<unsigned char>(key)));
