@@ -88,9 +88,9 @@ void Game::drawFull() const {
 void Game::run(bool& restartFlag, bool& exitFlag) {
     restartFlag = false;
     exitFlag = false;
-    drawMazeOnly()
+    drawMazeOnly();
     while (!gameOver_) {
-        int key = _getch();
+        int key = _getwch();
         handleKey(key);
     }
 }
