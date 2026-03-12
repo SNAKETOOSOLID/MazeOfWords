@@ -30,7 +30,86 @@ void Maze::addFrontier(int x, int y,
 }
 
 void Maze::generate() {
+    for (auto& row : cells_) {
+        std::fill(row.begin(), row.end(), false);
+    }
+
+    static std::mt19937 gen(std::random_device{}());
+
+    std::vector<std::vector<bool>> visited(
+        MAZE_HEIGHT,
+        std::vector<bool>(MAZE_WIDTH, false)
+    );
+    std::vector<std::vector<bool>> inFrontier(
+        MAZE_HEIGHT,
+        std::vector<bool>(MAZE_WIDTH, false)
+    );
+
+    std::vector<Cell> frontier;
+
+    int startX = 1;
+    int startY = 1;
+
+    visited[startY][startX] = true;
+    cells_[startY][startX] = true;
+
+    addFrontier(startX, startY, frontier, inFrontier, visited);
+
+    while (!frontier.empty()) {
+        std::uniform_int_distribution<> pickFrontier(
+            0,
+            static_cast<int>(frontier.size()) - 1
+        );
+        int idx = pickFrontier(gen);
+
+        Cell current = frontier[idx];
+        frontier[idx] = frontier.back();
+        frontier.pop_back();
+
+        inFrontier[current.y][current.x] = false;
+
+        std::vector<Cell> visitedNeighbours;
+        const int dx[4] = {2, -2, 0, 0};
+        const int dy[4] = {0, 0, 2, -2};
+
+        for (int i = 0; i < 4; ++i) {
+            int nx = current.x + dx[i];
+            int ny = current.y + dy[i];
+
+            if (inBoundsCell(nx, ny) && visited[ny][nx]) {
+                visitedNeighbours.push_back({nx, ny});
+            }
+        }
+
+        if (visitedNeighbours.empty()) {
+            continue;
+        }
+
+        std::uniform_int_distribution<> pickNeighbour(
+            0,
+            static_cast<int>(visitedNeighbours.size()) - 1
+        );
+        Cell neighbour = visitedNeighbours[pickNeighbour(gen)];
+
+        int wallX = (current.x + neighbour.x) / 2;
+        int wallY = (current.y + neighbour.y) / 2;
+
+        visited[current.y][current.x] = true;
+        cells_[current.y][current.x] = true;
+        cells_[wallY][wallX] = true;
+
+        addFrontier(current.x, current.y, frontier, inFrontier, visited);
+    }
+
+    cells_[1][1] = true;
+    if (MAZE_WIDTH > 2) {
+        cells_[1][2] = true;
+    }
+    if (MAZE_HEIGHT > 2) {
+        cells_[2][1] = true;
+    }
 }
+
 
 bool Maze::isPassable(int x, int y) const {
     if (x < 0 || x >= MAZE_WIDTH || y < 0 || y >= MAZE_HEIGHT) {
