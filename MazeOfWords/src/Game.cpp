@@ -83,6 +83,9 @@ void Game::printFrameHeader() const {
 
 void Game::drawFull() const {
     drawMazeOnly();
+    setColor(COLOR_DEFAULT);
+    std::cout << "Controls: W/A/S/D move, R restart, Q exit\n";
+    std::cout << "Message: " << statusMessage_ << "\n";
 }
 
 void Game::run(bool& restartFlag, bool& exitFlag) {
@@ -123,7 +126,7 @@ int Game::handleKey(int key) {
     char c = static_cast<char>(tolower(static_cast<unsigned char>(key)));
     if (c == 'w' || c == 'a' || c == 's' || c == 'd') {
         handleSingleStep(c);
-        drawMazeOnly();
+        drawFull();
     }
     return 0;
 }
