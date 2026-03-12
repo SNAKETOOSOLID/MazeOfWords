@@ -25,9 +25,7 @@ Game::Game(const std::vector<WordEntry>& entries)
     );
 
     if (static_cast<int>(passable.size()) < NUM_HINTS + 1) {
-        revealedLetters_.assign(targetWord_.size(), true);
-        statusMessage_ = "Stub mode: maze is not fully generated yet.";
-        return;
+        throw std::runtime_error("Not enough passable cells for hints and final door");
     }
 
     std::shuffle(passable.begin(), passable.end(), std::mt19937(std::random_device{}()));
