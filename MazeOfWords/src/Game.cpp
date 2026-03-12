@@ -44,6 +44,30 @@ Game::Game(const std::vector<WordEntry>& entries)
     statusMessage_ = "Collect hints, reveal letters and open the door at X.";
 }
 
+char Game::getOpenedDoorSymbol() const {
+    if (!finalDoor_) {
+        return '/';
+    }
+    
+    int x = finalDoor_->getX();
+    int y = finalDoor_->getY();
+    
+    bool wallLeft = !maze_.isPassable(x - 1, y);
+    bool wallRight = !maze_.isPassable(x + 1, y);
+    bool wallUp = !maze_.isPassable(x, y - 1);
+    bool wallDown = !maze_.isPassable(x, y + 1);
+    
+    if (wallRight || wallUp) {
+        return '/';
+    }
+    
+    if (wallLeft || wallDown) {
+        return '\\';
+    }
+    
+    return '/';
+}
+
 void Game::drawMazeOnly() const {
     printFrameHeader();
     setColor(COLOR_WALL);
