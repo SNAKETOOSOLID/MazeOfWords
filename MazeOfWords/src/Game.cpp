@@ -53,6 +53,11 @@ void Game::drawMazeOnly() const {
         std::cout << '|';
 
         for (int x = 0; x < MAZE_WIDTH; ++x) {
+            if (x == player_.getX() && y == player_.getY()) {
+                setColor(COLOR_PLAYER);
+                std::cout << player_.getSymbol();
+                continue;
+            }
             if (maze_.isPassable(x, y)) {
                 setColor(COLOR_PATH);
                 std::cout << ' ';
