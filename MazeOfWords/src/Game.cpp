@@ -206,6 +206,41 @@ bool Game::isFinalDoorAt(int x, int y) const {
     return finalDoor_ && finalDoor_->getX() == x && finalDoor_->getY() == y;
 }
 
+void Game::processFinalDoor() {
+    player_.setStandingOnObject(true);
+    drawMazeOnly();
+    if (finalDoor_ && finalDoor_->isOpened()) {
+        statusMessage_ = "The door is already open. Level completed.";
+        win_ = true;
+        gameOver_ = true;
+        player_.setStandingOnObject(false);
+        drawFull();
+        return;
+    }
+    setColor(COLOR_DEFAULT);
+    std::cout << "Guess the word: ";
+    std::string guess = readLineTrimmedSafe();
+    std::string upperGuess = guess;
+    std::transform(upperGuess.begin(), upperGuess.end(), upperGuess.begin(),
+                   [](unsigned char c) { return
+                           static_cast<char>(std::toupper(c)); });
+    if (upperGuess == targetWord_) {
+        int revealed = countRevealedLetters();
+        scoreMultiplier_ = getScoreMultiplier(revealed);
+        char openedSymbol = getOpenedDoorSymbol();
+        finalDoor_->open(openedSymbol);
+        statusMessage_ = "Correct! The door is open. You escaped!";
+        win_ = true;
+        gameOver_ = true;
+        player_.setStandingOnObject(false);
+        drawFull();
+    } else {
+        statusMessage_ = "Wrong word. Try again.";
+        player_.setStandingOnObject(false);
+        drawFull();
+    }
+}
+
 void Game::run(bool& restartFlag, bool& exitFlag) {
     restartFlag = false;
     exitFlag = false;
