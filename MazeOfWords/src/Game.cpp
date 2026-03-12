@@ -2,6 +2,7 @@
 #include "../include/Config.h"
 #include "../include/ConsoleUtils.h"
 
+#include <iostream>
 #include <algorithm>
 #include <random>
 #include <stdexcept>

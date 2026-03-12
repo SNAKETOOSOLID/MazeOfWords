@@ -1,6 +1,7 @@
 #include "../include/Maze.h"
 #include "../include/Config.h"
 
+#include <iostream>
 #include <algorithm>
 
 Maze::Maze() : cells_(MAZE_HEIGHT, std::vector<bool>(MAZE_WIDTH, false)) {
