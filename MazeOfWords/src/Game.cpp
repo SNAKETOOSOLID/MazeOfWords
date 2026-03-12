@@ -53,6 +53,11 @@ void Game::drawMazeOnly() const {
         std::cout << '|';
 
         for (int x = 0; x < MAZE_WIDTH; ++x) {
+            if (x == player_.getX() && y == player_.getY()) {
+                setColor(COLOR_PLAYER);
+                std::cout << player_.getSymbol();
+                continue;
+            }
             if (maze_.isPassable(x, y)) {
                 setColor(COLOR_PATH);
                 std::cout << ' ';
@@ -84,8 +89,41 @@ void Game::run(bool& restartFlag, bool& exitFlag) {
     restartFlag = false;
     exitFlag = false;
     drawMazeOnly();
+    while (!gameOver_) {
+        int key = _getwch();
+        handleKey(key);
+    }
+}
+
+int Game::handleSingleStep(char dir) {
+    int newX = player_.getX();
+    int newY = player_.getY();
+    
+    switch (tolower(static_cast<unsigned char>(dir))) {
+        case 'd': ++newX; break;
+        case 'a': --newX; break;
+        case 'w': --newY; break;
+        case 's': ++newY; break;
+        default: return 1;
+    }
+    
+    if (!maze_.isPassable(newX, newY)) {
+        statusMessage_ = "Wall. You cannot move there.";
+        return 1;
+    }
+    
+    player_.setPosition(newX, newY);
+    stepCounter_++;
+    player_.setStandingOnObject(false);
+    
+    return 0;
 }
 
 int Game::handleKey(int key) {
+    char c = static_cast<char>(tolower(static_cast<unsigned char>(key)));
+    if (c == 'w' || c == 'a' || c == 's' || c == 'd') {
+        handleSingleStep(c);
+        drawMazeOnly();
+    }
     return 0;
 }
