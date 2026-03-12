@@ -110,13 +110,6 @@ void Game::drawMazeOnly() const {
                     std::cout << H_WALL;
                 }
             }
-            if (maze_.isPassable(x, y)) {
-                setColor(COLOR_PATH);
-                std::cout << ' ';
-            } else {
-                setColor(COLOR_WALL);
-                std::cout << H_WALL;
-            }
         }
 
         setColor(COLOR_WALL);
