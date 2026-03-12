@@ -112,6 +112,12 @@ void Game::drawFull() const {
     drawMazeOnly();
     setColor(COLOR_DEFAULT);
     std::cout << "Controls: W/A/S/D move, R restart, Q exit\n";
+    std::cout << "Door: ";
+    setColor(COLOR_FINAL_DOOR_CLOSED);
+    std::cout<<"X = closed";
+    setColor(COLOR_FINAL_DOOR_OPEN);
+    std::cout<<"/ or \\ = open\n";
+    setColor(COLOR_DEFAULT);
     std::cout << "Message: " << statusMessage_ << "\n";
 }
 
