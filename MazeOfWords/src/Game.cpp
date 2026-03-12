@@ -1,5 +1,4 @@
 #include "../include/Game.h"
-
 #include "../include/Config.h"
 #include "../include/ConsoleUtils.h"
 
@@ -43,7 +42,38 @@ Game::Game(const std::vector<WordEntry>& entries)
     statusMessage_ = "Collect hints, reveal letters and open the door at X.";
 }
 
+void Game::drawMazeOnly() const {
+    setColor(COLOR_WALL);
+    std::cout << '|' << repeatText(H_WALL, MAZE_WIDTH) << "|\n";
+
+    for (int y = 0; y < MAZE_HEIGHT; ++y) {
+        setColor(COLOR_WALL);
+        std::cout << '|';
+
+        for (int x = 0; x < MAZE_WIDTH; ++x) {
+            if (maze_.isPassable(x, y)) {
+                setColor(COLOR_PATH);
+                std::cout << ' ';
+            } else {
+                setColor(COLOR_WALL);
+                std::cout << H_WALL;
+            }
+        }
+
+        setColor(COLOR_WALL);
+        std::cout << "|\n";
+    }
+
+    setColor(COLOR_WALL);
+    std::cout << '|' << repeatText(H_WALL, MAZE_WIDTH) << "|\n";
+    setColor(COLOR_DEFAULT);
+}
+
+
 void Game::run(bool& restartFlag, bool& exitFlag) {
+    restartFlag = false;
+    exitFlag = false;
+    drawMazeOnly();
 }
 
 int Game::handleKey(int key) {
