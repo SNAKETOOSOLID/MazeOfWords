@@ -58,6 +58,33 @@ void Game::drawMazeOnly() const {
                 std::cout << player_.getSymbol();
                 continue;
             }
+            bool drawn = false;
+            if (finalDoor_ && finalDoor_->getX() == x && finalDoor_->getY() == y) {
+                setColor(finalDoor_->isOpened() ? COLOR_FINAL_DOOR_OPEN : COLOR_FINAL_DOOR_CLOSED);
+                std::cout << finalDoor_->getSymbol();
+                drawn = true;
+            }
+        
+            if (!drawn) {
+                for (const auto& hint : hints_) {
+                    if (!hint.isCollected() && hint.getX() == x && hint.getY() == y) {
+                        setColor(COLOR_HINT);
+                        std::cout << hint.getSymbol();
+                        drawn = true;
+                        break;
+                    }
+                }
+            }
+        
+            if (!drawn) {
+                if (maze_.isPassable(x, y)) {
+                    setColor(COLOR_PATH);
+                    std::cout << ' ';
+                } else {
+                    setColor(COLOR_WALL);
+                    std::cout << H_WALL;
+                }
+            }
             if (maze_.isPassable(x, y)) {
                 setColor(COLOR_PATH);
                 std::cout << ' ';
