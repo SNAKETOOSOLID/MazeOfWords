@@ -76,6 +76,9 @@ void Game::printFrameHeader() const {
     std::cout << "\n========================================\n";
 }
 
+void Game::drawFull() const {
+    drawMazeOnly();
+}
 
 void Game::run(bool& restartFlag, bool& exitFlag) {
     restartFlag = false;
