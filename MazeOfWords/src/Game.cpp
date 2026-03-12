@@ -109,6 +109,41 @@ void Game::printFrameHeader() const {
     std::cout << "\n========================================\n";
 }
 
+void Game::processHint(size_t hintIndex) {
+    player_.setStandingOnObject(true);
+    drawMazeOnly();
+    setColor(COLOR_DEFAULT);
+    std::cout << "Question: " << hints_[hintIndex].getQuestion().prompt() <<
+    "\n";
+    std::cout << "Enter answer or press Enter to close: ";
+    std::optional<int> answer = readOptionalIntLine();
+    if (!answer.has_value()) {
+        statusMessage_ = "Hint closed. It is still not collected.";
+        player_.setStandingOnObject(false);
+        20
+        drawFull();
+        return;
+    }
+    if (!hints_[hintIndex].getQuestion().check(*answer)) {
+        statusMessage_ = "Wrong answer! Try again.";
+        player_.setStandingOnObject(false);
+        drawFull();
+        return;
+    }
+    hints_[hintIndex].collect();
+    auto randomIndex = wordManager_.getRandomHiddenIndex(revealedLetters_);
+    if (randomIndex.has_value()) {
+        revealedLetters_[*randomIndex] = true;
+        statusMessage_ = std::string("Correct answer! You got letter: ") +
+        targetWord_[*randomIndex];
+        tryAutoOpenDoor();
+    } else {
+        statusMessage_ = "Correct answer! All letters are already revealed.";
+    }
+    player_.setStandingOnObject(false);
+    drawFull();
+}
+
 void Game::drawFull() const {
     drawMazeOnly();
     setColor(COLOR_DEFAULT);
