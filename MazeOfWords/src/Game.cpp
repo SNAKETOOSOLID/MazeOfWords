@@ -111,6 +111,18 @@ void Game::printFrameHeader() const {
 void Game::drawFull() const {
     drawMazeOnly();
     setColor(COLOR_DEFAULT);
+    std::cout << "Word: ";
+    for (size_t i = 0; i < targetWord_.size(); ++i) {
+        if (revealedLetters_[i]) {
+            setColor(COLOR_LETTER);
+            std::cout << targetWord_[i] << ' ';
+        } else {
+            setColor(COLOR_DEFAULT);
+            std::cout << "_ ";
+        }
+    }
+    setColor(COLOR_DEFAULT);
+    std::cout << "\n";
     std::cout << "Controls: W/A/S/D move, R restart, Q exit\n";
     std::cout << "Message: " << statusMessage_ << "\n";
 }
