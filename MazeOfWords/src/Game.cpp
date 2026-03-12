@@ -232,6 +232,41 @@ bool Game::isFinalDoorAt(int x, int y) const {
     return finalDoor_ && finalDoor_->getX() == x && finalDoor_->getY() == y;
 }
 
+void Game::processFinalDoor() {
+    player_.setStandingOnObject(true);
+    drawMazeOnly();
+    if (finalDoor_ && finalDoor_->isOpened()) {
+        statusMessage_ = "The door is already open. Level completed.";
+        win_ = true;
+        gameOver_ = true;
+        player_.setStandingOnObject(false);
+        drawFull();
+        return;
+    }
+    setColor(COLOR_DEFAULT);
+    std::cout << "Guess the word: ";
+    std::string guess = readLineTrimmedSafe();
+    std::string upperGuess = guess;
+    std::transform(upperGuess.begin(), upperGuess.end(), upperGuess.begin(),
+                   [](unsigned char c) { return
+                           static_cast<char>(std::toupper(c)); });
+    if (upperGuess == targetWord_) {
+        int revealed = countRevealedLetters();
+        scoreMultiplier_ = getScoreMultiplier(revealed);
+        char openedSymbol = getOpenedDoorSymbol();
+        finalDoor_->open(openedSymbol);
+        statusMessage_ = "Correct! The door is open. You escaped!";
+        win_ = true;
+        gameOver_ = true;
+        player_.setStandingOnObject(false);
+        drawFull();
+    } else {
+        statusMessage_ = "Wrong word. Try again.";
+        player_.setStandingOnObject(false);
+        drawFull();
+    }
+}
+
 void Game::run(bool& restartFlag, bool& exitFlag) {
     restartFlag = false;
     exitFlag = false;
@@ -333,4 +368,53 @@ int Game::handleKey(int key) {
         drawFull();
     }
     return 0;
+}
+
+void Game::showVictoryScreen(bool& restartFlag, bool& exitFlag) {
+    setColor(COLOR_LETTER);
+    std::cout << "\n========================================\n";
+    std::cout << "You escaped the maze!\n";
+    int baseScore = std::max(0, MAX_SCORE - stepCounter_ * STEP_PENALTY);
+    int finalScore = baseScore * scoreMultiplier_;
+    std::cout << "Total steps: " << stepCounter_ << "\n";
+    std::cout << "Base score: " << baseScore << "\n";
+    std::cout << "Multiplier: x" << scoreMultiplier_ << "\n";
+    std::cout << "Final score: " << finalScore << "\n";
+    std::cout << "Word: " << targetWord_ << " - " << targetDefinition_ << "\n";
+    std::cout << "========================================\n";
+    setColor(COLOR_DEFAULT);
+    while (true) {
+        std::cout << "Press R to restart or Q to exit: ";
+        int key = _getwch();
+        if (key == 0 || key == 224) {
+            _getwch();
+            continue;
+        }
+        char c = static_cast<char>(tolower(static_cast<unsigned char>(key)));
+        if (c == 'r') {
+            restartFlag = true;
+            break;
+        }
+        if (c == 'q') {
+            exitFlag = true;
+            break;
+        }
+    }
+}
+//fix
+void Game::tryAutoOpenDoor() {}
+int Game::countRevealedLetters() const {
+    int count = 0;
+    for (bool revealed : revealedLetters_) {
+        if (revealed) {
+            count++;
+        }
+    }
+    return count;
+}
+
+int Game::getScoreMultiplier(int revealed) const {
+    if (revealed <= 2) return 3;
+    if (revealed <= 4) return 2;
+    return 1;
 }
