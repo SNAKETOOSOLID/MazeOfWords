@@ -362,11 +362,35 @@ std::optional<int> Game::readOptionalIntLine() {
 
 
 int Game::handleKey(int key) {
-    char c = static_cast<char>(tolower(static_cast<unsigned char>(key)));
-    if (c == 'w' || c == 'a' || c == 's' || c == 'd') {
-        handleSingleStep(c);
-        drawFull();
+    if (key == 0 || key == 224) {
+        _getch();
+        return 0;
     }
+    
+    char c = static_cast<char>(tolower(static_cast<unsigned char>(key)));
+    
+    if (c == 'r') {
+        return 1;
+    }
+    
+    if (c == 'q') {
+        return 2;
+    }
+    
+    if (c == 'w' || c == 'a' || c == 's' || c == 'd') {
+        int result = handleSingleStep(c);
+        if (!gameOver_) {
+            if (result == 0) {
+                drawMazeOnly();
+            } else {
+                drawFull();
+            }
+        }
+        return 0;
+    }
+    
+    statusMessage_ = "Use only W/A/S/D, R or Q.";
+    drawFull();
     return 0;
 }
 
