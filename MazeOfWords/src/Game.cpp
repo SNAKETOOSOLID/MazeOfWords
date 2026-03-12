@@ -428,9 +428,14 @@ void Game::showVictoryScreen(bool& restartFlag, bool& exitFlag) {
     }
 }
 
-//fix
 int Game::getScoreMultiplier(int revealed) const {
-    if (revealed <= 2) return 3;
-    if (revealed <= 4) return 2;
-    return 1;
+    switch (revealed) {
+        case 0: return 10;
+        case 1: return 9;
+        case 2: return 8;
+        case 3: return 6;
+        case 4: return 4;
+        case 5: return 2;
+        default: return 1;
+    }
 }
