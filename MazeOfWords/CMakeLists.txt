@@ -5,13 +5,13 @@ project(MazeOfWords)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(include)
+include_directories(MazeOfWords/include)
 
 set(SOURCES
-        src/main.cpp
-        src/ConsoleUtils.cpp
-        src/Game.cpp
-        src/Maze.cpp
-        src/WordManager.cpp
+        MazeOfWords/src/main.cpp
+        MazeOfWords/src/ConsoleUtils.cpp
+        MazeOfWords/src/Game.cpp
+        MazeOfWords/src/Maze.cpp
+        MazeOfWords/src/WordManager.cpp
 )
 add_executable(MazeOfWords ${SOURCES})
