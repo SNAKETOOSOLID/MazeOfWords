@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <random>
 #include <stdexcept>
+#include <cctype>
 
 Game::Game(const std::vector<WordEntry>& entries)
         : wordManager_(entries),
@@ -185,6 +186,55 @@ int Game::handleSingleStep(char dir) {
     player_.setStandingOnObject(false);
     return 0;
 }
+
+void Game::clearPendingNewlines() {
+    while (std::cin.peek() == '\n' || std::cin.peek() == '\r') {
+        std::cin.get();
+    }
+}
+std::string Game::readLineTrimmedSafe() {
+    clearPendingNewlines();
+    std::string s;
+    std::getline(std::cin, s);
+    while (!s.empty() && std::isspace(static_cast<unsigned
+    char>(s.front()))) {
+        s.erase(s.begin());
+    }
+    while (!s.empty() && std::isspace(static_cast<unsigned char>(s.back())))
+    {
+        s.pop_back();
+    }
+    return s;
+}
+std::optional<int> Game::readOptionalIntLine() {
+    clearPendingNewlines();
+    std::string s;
+    std::getline(std::cin, s);
+    if (s.empty()) {
+        return std::nullopt;
+    }
+    while (!s.empty() && std::isspace(static_cast<unsigned char>(s.front()))) {
+        s.erase(s.begin());
+    }
+    while (!s.empty() && std::isspace(static_cast<unsigned char>(s.back())))
+    {
+        s.pop_back();
+    }
+    if (s.empty()) {
+        return std::nullopt;
+    }
+    try {
+        size_t pos = 0;
+        int value = std::stoi(s, &pos);
+        if (pos != s.size()) {
+            return std::nullopt;
+        }
+        return value;
+    } catch (...) {
+        return std::nullopt;
+    }
+}
+
 
 int Game::handleKey(int key) {
     char c = static_cast<char>(tolower(static_cast<unsigned char>(key)));
