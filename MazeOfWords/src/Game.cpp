@@ -268,12 +268,21 @@ void Game::processFinalDoor() {
 }
 
 void Game::run(bool& restartFlag, bool& exitFlag) {
-    restartFlag = false;
-    exitFlag = false;
-    drawMazeOnly();
+    drawFull();
     while (!gameOver_) {
         int key = _getwch();
-        handleKey(key);
+        int action = handleKey(key);
+        if (action == 1) {
+            restartFlag = true;
+            break;
+        }
+        if (action == 2) {
+            exitFlag = true;
+            break;
+        }
+    }
+    if (gameOver_ && win_ && !restartFlag && !exitFlag) {
+        showVictoryScreen(restartFlag, exitFlag);
     }
 }
 
