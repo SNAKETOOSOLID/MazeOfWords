@@ -158,8 +158,19 @@ int Game::handleSingleStep(char dir) {
     
     player_.setPosition(newX, newY);
     stepCounter_++;
-    player_.setStandingOnObject(false);
     
+    if (isFinalDoorAt(newX, newY)) {
+        processFinalDoor();
+        return 2;
+    }
+    
+    auto hintIndex = findHintIndexAt(newX, newY);
+    if (hintIndex.has_value()) {
+        processHint(*hintIndex);
+        return 2;
+    }
+    
+    player_.setStandingOnObject(false);
     return 0;
 }
 
