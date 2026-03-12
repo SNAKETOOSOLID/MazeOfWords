@@ -44,6 +44,7 @@ Game::Game(const std::vector<WordEntry>& entries)
 }
 
 void Game::drawMazeOnly() const {
+    printFrameHeader();
     setColor(COLOR_WALL);
     std::cout << '|' << repeatText(H_WALL, MAZE_WIDTH) << "|\n";
 
@@ -68,6 +69,11 @@ void Game::drawMazeOnly() const {
     setColor(COLOR_WALL);
     std::cout << '|' << repeatText(H_WALL, MAZE_WIDTH) << "|\n";
     setColor(COLOR_DEFAULT);
+}
+
+void Game::printFrameHeader() const {
+    setColor(COLOR_DEFAULT);
+    std::cout << "\n========================================\n";
 }
 
 
