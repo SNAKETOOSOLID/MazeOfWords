@@ -308,3 +308,39 @@ int Game::handleKey(int key) {
     }
     return 0;
 }
+
+void Game::showVictoryScreen(bool& restartFlag, bool& exitFlag) {
+    setColor(COLOR_LETTER);
+    std::cout << "\n========================================\n";
+    std::cout << "You escaped the maze!\n";
+    int baseScore = std::max(0, MAX_SCORE - stepCounter_ * STEP_PENALTY);
+    int finalScore = baseScore * scoreMultiplier_;
+    std::cout << "Total steps: " << stepCounter_ << "\n";
+    std::cout << "Base score: " << baseScore << "\n";
+    std::cout << "Multiplier: x" << scoreMultiplier_ << "\n";
+    std::cout << "Final score: " << finalScore << "\n";
+    std::cout << "Word: " << targetWord_ << " - " << targetDefinition_ << "\n";
+    std::cout << "========================================\n";
+    setColor(COLOR_DEFAULT);
+    while (true) {
+        std::cout << "Press R to restart or Q to exit: ";
+        int key = _getwch();
+        if (key == 0 || key == 224) {
+            _getwch();
+            continue;
+        }
+        char c = static_cast<char>(tolower(static_cast<unsigned char>(key)));
+        if (c == 'r') {
+            restartFlag = true;
+            break;
+        }
+        if (c == 'q') {
+            exitFlag = true;
+            break;
+        }
+    }
+}
+//fix
+void Game::tryAutoOpenDoor() {}
+
+void Game::processFinalDoor() {}

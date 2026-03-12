@@ -3,7 +3,7 @@
 #include <string>
 #include <optional>
 
-WordManager::WordManager(const std::vector<WordEntry>& entries) {}
+/* WordManager::WordManager(const std::vector<WordEntry>& entries) {}
 
 const std::string& WordManager::getTargetWord() const
 {
@@ -20,4 +20,4 @@ const std::string& WordManager::getTargetDefinition() const
 std::optional<size_t> WordManager::getRandomHiddenIndex(const std::vector<bool>&)
 {
     return std::nullopt;
-}
+} */
