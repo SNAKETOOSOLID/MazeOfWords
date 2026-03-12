@@ -167,6 +167,32 @@ void Game::processHint(size_t hintIndex) {
     drawFull();
 }
 
+int Game::countRevealedLetters() const {
+    int count = 0;
+    for (bool r : revealedLetters_) {
+        if (r) {
+            ++count;
+        }
+    }
+    return count;
+}
+bool Game::isWordFullyRevealed() const {
+    for (bool r : revealedLetters_) {
+        if (!r) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void Game::tryAutoOpenDoor(){
+    if (finalDoor_ && !finalDoor_->isOpened() && isWordFullyRevealed()){
+        char openedSymbol = getOpenedDoorSymbol();
+        finalDoor_->open(openedSymbol);
+        statusMessage_ = "All letters collected. Door opened automatically.";
+    }
+};
+
 void Game::drawFull() const {
     drawMazeOnly();
     setColor(COLOR_DEFAULT);
