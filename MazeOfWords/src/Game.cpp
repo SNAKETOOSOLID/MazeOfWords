@@ -377,5 +377,18 @@ void Game::showVictoryScreen(bool& restartFlag, bool& exitFlag) {
 }
 //fix
 void Game::tryAutoOpenDoor() {}
+int Game::countRevealedLetters() const {
+    int count = 0;
+    for (bool revealed : revealedLetters_) {
+        if (revealed) {
+            count++;
+        }
+    }
+    return count;
+}
 
-void Game::processFinalDoor() {}
+int Game::getScoreMultiplier(int revealed) const {
+    if (revealed <= 2) return 3;
+    if (revealed <= 4) return 2;
+    return 1;
+}
