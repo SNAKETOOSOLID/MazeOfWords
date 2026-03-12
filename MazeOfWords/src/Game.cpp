@@ -144,7 +144,6 @@ void Game::processHint(size_t hintIndex) {
     if (!answer.has_value()) {
         statusMessage_ = "Hint closed. It is still not collected.";
         player_.setStandingOnObject(false);
-        20
         drawFull();
         return;
     }
