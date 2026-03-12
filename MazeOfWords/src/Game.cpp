@@ -363,7 +363,7 @@ std::optional<int> Game::readOptionalIntLine() {
 
 int Game::handleKey(int key) {
     if (key == 0 || key == 224) {
-        _getch();
+        _getwch();
         return 0;
     }
     
@@ -425,18 +425,8 @@ void Game::showVictoryScreen(bool& restartFlag, bool& exitFlag) {
         }
     }
 }
-//fix
-void Game::tryAutoOpenDoor() {}
-int Game::countRevealedLetters() const {
-    int count = 0;
-    for (bool revealed : revealedLetters_) {
-        if (revealed) {
-            count++;
-        }
-    }
-    return count;
-}
 
+//fix
 int Game::getScoreMultiplier(int revealed) const {
     if (revealed <= 2) return 3;
     if (revealed <= 4) return 2;
