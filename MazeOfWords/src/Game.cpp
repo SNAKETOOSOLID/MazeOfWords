@@ -115,6 +115,20 @@ void Game::drawFull() const {
     std::cout << "Message: " << statusMessage_ << "\n";
 }
 
+std::optional<size_t> Game::findHintIndexAt(int x, int y) const {
+    for (size_t i = 0; i < hints_.size(); ++i) {
+        if (!hints_[i].isCollected() && hints_[i].getX() == x &&
+            hints_[i].getY() == y) {
+            return i;
+        }
+    }
+    return std::nullopt;
+}
+
+bool Game::isFinalDoorAt(int x, int y) const {
+    return finalDoor_ && finalDoor_->getX() == x && finalDoor_->getY() == y;
+}
+
 void Game::run(bool& restartFlag, bool& exitFlag) {
     restartFlag = false;
     exitFlag = false;
