@@ -1,5 +1,7 @@
 #pragma once
 #include "MultiplicationQuestion.h"
+#include <variant>
+
 class Entity {
 protected:
     int x_;
@@ -44,9 +46,9 @@ public:
 };
 class Hint : public Entity {
     bool collected_ = false;
-    MultiplicationQuestion question_;
+    std::variant<MultiplicationQuestion> question_;
 public:
-    Hint(int x, int y) : Entity(x, y) {}
+    Hint(int x, int y) : Entity(x, y), question_(MultiplicationQuestion()) {}
     char getSymbol() const override {
         return collected_ ? ' ' : '?';
     }
@@ -56,7 +58,13 @@ public:
     void collect() {
         collected_ = true;
     }
-    const MultiplicationQuestion& getQuestion() const {
+    const std::variant<MultiplicationQuestion> getQuestion() const {
         return question_;
+    }
+    std::string getPrompt() const {
+        return std::visit([](const auto& q) { return q.prompt(); }, question_);
+    }
+    bool checkAnswer(int answer) const {
+        return std::visit([answer](const auto& q) { return q.check(answer); }, question_);
     }
 };
