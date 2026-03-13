@@ -7,12 +7,13 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <memory>
 
 class Game {
     Maze maze_;
     Player player_{1, 1};
-    std::vector<Hint> hints_;
-    std::optional<FinalDoor> finalDoor_;
+    std::vector<std::unique_ptr<Hint>> hints_;
+    std::unique_ptr<FinalDoor> finalDoor_;
     WordManager wordManager_;
 
     std::string targetWord_;
