@@ -128,7 +128,7 @@ void Game::processHint(size_t hintIndex) {
     player_.setStandingOnObject(true);
     drawMazeOnly();
     setColor(COLOR_DEFAULT);
-    std::cout << "Question: " << hints_[hintIndex]->getQuestion().prompt() <<
+    std::cout << "Question: " << hints_[hintIndex]->getPrompt() <<
     "\n";
     std::cout << "Enter answer or press Enter to close: ";
     std::optional<int> answer = readOptionalIntLine();
@@ -138,7 +138,7 @@ void Game::processHint(size_t hintIndex) {
         drawFull();
         return;
     }
-    if (!hints_[hintIndex]->getQuestion().check(*answer)) {
+    if (!hints_[hintIndex]->checkAnswer(*answer)) {
         statusMessage_ = "Wrong answer! Try again.";
         player_.setStandingOnObject(false);
         drawFull();
