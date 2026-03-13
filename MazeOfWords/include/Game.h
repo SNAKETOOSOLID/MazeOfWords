@@ -14,6 +14,15 @@ struct ActiveWordInfo {
     std::string definition;
 };
 
+struct GameResult {
+    std::string word;
+    std::string definition;
+    int steps;
+    int baseScore;
+    int multiplier;
+    int finalScore;
+};
+
 class Game {
     Maze maze_;
     Player player_{1, 1};
@@ -24,6 +33,9 @@ class Game {
     std::string targetWord_;
     std::string targetDefinition_;
     std::vector<bool> revealedLetters_;
+    std::vector<std::shared_ptr<GameResult>> history_;
+    std::shared_ptr<GameResult> bestResult_;
+    bool isNewRecord_ = false;
     bool gameOver_ = false;
     bool win_ = false;
     std::string statusMessage_;
@@ -51,6 +63,10 @@ class Game {
     static void clearPendingNewlines();
     static std::string readLineTrimmedSafe();
     static std::optional<int> readOptionalIntLine();
+
+    void saveGameResult();
+    bool isBetterResult(const std::shared_ptr<GameResult>& lhs,
+                        const std::shared_ptr<GameResult>& rhs) const;
 
 public:
     explicit Game(const std::vector<WordEntry>& entries);

@@ -181,6 +181,19 @@ bool Game::isWordFullyRevealed() const {
     return true;
 }
 
+bool Game::isBetterResult(const std::shared_ptr<GameResult>& lhs,
+                          const std::shared_ptr<GameResult>& rhs) const {
+    if (!rhs) {
+        return true;
+    }
+
+    if (lhs->finalScore != rhs->finalScore) {
+        return lhs->finalScore > rhs->finalScore;
+    }
+
+    return lhs->steps < rhs->steps;
+}
+
 void Game::tryAutoOpenDoor(){
     if (finalDoor_ && !finalDoor_->isOpened() && isWordFullyRevealed()){
         char openedSymbol = getOpenedDoorSymbol();
@@ -235,6 +248,7 @@ void Game::processFinalDoor() {
         statusMessage_ = "The door is already open. Level completed.";
         win_ = true;
         gameOver_ = true;
+        saveGameResult();
         player_.setStandingOnObject(false);
         drawFull();
         return;
@@ -424,6 +438,18 @@ void Game::showVictoryScreen(bool& restartFlag, bool& exitFlag) {
     std::cout << "Multiplier: x" << scoreMultiplier_ << "\n";
     std::cout << "Final score: " << finalScore << "\n";
     std::cout << "Word: " << activeWord_->word << " - " << activeWord_->definition << "\n";
+
+    if (isNewRecord_) {
+        setColor(COLOR_STATUS_OK);
+        std::cout << "Congratulations! New record!\n";
+        setColor(COLOR_LETTER);
+    }
+
+    if (bestResult_) {
+        std::cout << "Best score so far: " << bestResult_->finalScore
+                  << " (" << bestResult_->steps << " steps)\n";
+    }
+
     std::cout << "========================================\n";
     setColor(COLOR_DEFAULT);
     while (true) {
@@ -454,5 +480,28 @@ int Game::getScoreMultiplier(int revealed) const {
         case 4: return 4;
         case 5: return 2;
         default: return 1;
+    }
+}
+
+void Game::saveGameResult() {
+    int baseScore = std::max(0, MAX_SCORE - stepCounter_ * STEP_PENALTY);
+    int finalScore = baseScore * scoreMultiplier_;
+
+    auto result = std::make_shared<GameResult>(GameResult{
+        activeWord_->word,
+        activeWord_->definition,
+        stepCounter_,
+        baseScore,
+        scoreMultiplier_,
+        finalScore
+    });
+
+    history_.push_back(result);
+
+    if (isBetterResult(result, bestResult_)) {
+        bestResult_ = result;
+        isNewRecord_ = true;
+    } else {
+        isNewRecord_ = false;
     }
 }
