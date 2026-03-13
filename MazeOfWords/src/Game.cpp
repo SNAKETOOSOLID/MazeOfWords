@@ -32,11 +32,11 @@ Game::Game(const std::vector<WordEntry>& entries)
 
     for (int i = 0; i < NUM_HINTS; ++i) {
         auto [x, y] = passable[i];
-        hints_.emplace_back(x, y);
+        hints_.push_back(std::make_unique<Hint>(x, y));
     }
 
     auto [doorX, doorY] = passable[NUM_HINTS];
-    finalDoor_.emplace(doorX, doorY);
+    finalDoor_ = std::make_unique<FinalDoor>(doorX, doorY);
 
     revealedLetters_.assign(targetWord_.size(), false);
     statusMessage_ = "Collect hints, reveal letters and open the door at X.";
@@ -90,9 +90,9 @@ void Game::drawMazeOnly() const {
         
             if (!drawn) {
                 for (const auto& hint : hints_) {
-                    if (!hint.isCollected() && hint.getX() == x && hint.getY() == y) {
+                    if (!hint->isCollected() && hint->getX() == x && hint->getY() == y) {
                         setColor(COLOR_HINT);
-                        std::cout << hint.getSymbol();
+                        std::cout << hint->getSymbol();
                         drawn = true;
                         break;
                     }
@@ -128,7 +128,7 @@ void Game::processHint(size_t hintIndex) {
     player_.setStandingOnObject(true);
     drawMazeOnly();
     setColor(COLOR_DEFAULT);
-    std::cout << "Question: " << hints_[hintIndex].getQuestion().prompt() <<
+    std::cout << "Question: " << hints_[hintIndex]->getQuestion().prompt() <<
     "\n";
     std::cout << "Enter answer or press Enter to close: ";
     std::optional<int> answer = readOptionalIntLine();
@@ -138,13 +138,13 @@ void Game::processHint(size_t hintIndex) {
         drawFull();
         return;
     }
-    if (!hints_[hintIndex].getQuestion().check(*answer)) {
+    if (!hints_[hintIndex]->getQuestion().check(*answer)) {
         statusMessage_ = "Wrong answer! Try again.";
         player_.setStandingOnObject(false);
         drawFull();
         return;
     }
-    hints_[hintIndex].collect();
+    hints_[hintIndex]->collect();
     auto randomIndex = wordManager_.getRandomHiddenIndex(revealedLetters_);
     if (randomIndex.has_value()) {
         revealedLetters_[*randomIndex] = true;
@@ -211,8 +211,7 @@ void Game::drawFull() const {
 
 std::optional<size_t> Game::findHintIndexAt(int x, int y) const {
     for (size_t i = 0; i < hints_.size(); ++i) {
-        if (!hints_[i].isCollected() && hints_[i].getX() == x &&
-            hints_[i].getY() == y) {
+        if (!hints_[i]->isCollected() && hints_[i]->getX() == x && hints_[i]->getY() == y) {
             return i;
         }
     }
