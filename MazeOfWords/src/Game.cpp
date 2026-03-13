@@ -9,9 +9,14 @@
 #include <cctype>
 
 Game::Game(const std::vector<WordEntry>& entries)
-        : wordManager_(entries),
-          targetWord_(wordManager_.getTargetWord()),
-          targetDefinition_(wordManager_.getTargetDefinition()) {
+        : wordManager_(entries) {
+        activeWord_ = std::make_unique<ActiveWordInfo>(
+            ActiveWordInfo{
+                wordManager_.getTargetWord(),
+                wordManager_.getTargetDefinition()
+        }
+    );
+
     auto passable = maze_.getPassableCells();
 
     passable.erase(
@@ -38,7 +43,7 @@ Game::Game(const std::vector<WordEntry>& entries)
     auto [doorX, doorY] = passable[NUM_HINTS];
     finalDoor_ = std::make_unique<FinalDoor>(doorX, doorY);
 
-    revealedLetters_.assign(targetWord_.size(), false);
+    revealedLetters_.assign(activeWord_->word.size(), false);
     statusMessage_ = "Collect hints, reveal letters and open the door at X.";
 }
 
@@ -149,7 +154,7 @@ void Game::processHint(size_t hintIndex) {
     if (randomIndex.has_value()) {
         revealedLetters_[*randomIndex] = true;
         statusMessage_ = std::string("Correct answer! You got letter: ") +
-        targetWord_[*randomIndex];
+        activeWord_->word[*randomIndex];
         tryAutoOpenDoor();
     } else {
         statusMessage_ = "Correct answer! All letters are already revealed.";
@@ -188,10 +193,10 @@ void Game::drawFull() const {
     drawMazeOnly();
     setColor(COLOR_DEFAULT);
     std::cout << "Word: ";
-    for (size_t i = 0; i < targetWord_.size(); ++i) {
+    for (size_t i = 0; i < activeWord_->word.size(); ++i) {
         if (revealedLetters_[i]) {
             setColor(COLOR_LETTER);
-            std::cout << targetWord_[i] << ' ';
+            std::cout << activeWord_->word[i] << ' ';
         } else {
             setColor(COLOR_DEFAULT);
             std::cout << "_ ";
@@ -199,12 +204,13 @@ void Game::drawFull() const {
     }
     setColor(COLOR_DEFAULT);
     std::cout << "\n";
+    std::cout << "Definition: " << activeWord_->definition << "\n";
     std::cout << "Controls: W/A/S/D move, R restart, Q exit\n";
     std::cout << "Door: ";
     setColor(COLOR_FINAL_DOOR_CLOSED);
     std::cout<<"X = closed";
     setColor(COLOR_FINAL_DOOR_OPEN);
-    std::cout<<"/ or \\ = open\n";
+    std::cout<<"/ = open\n";
     setColor(COLOR_DEFAULT);
     std::cout << "Message: " << statusMessage_ << "\n";
 }
@@ -233,14 +239,28 @@ void Game::processFinalDoor() {
         drawFull();
         return;
     }
+
     setColor(COLOR_DEFAULT);
+    std::cout << "Word: ";
+    for (size_t i = 0; i < activeWord_->word.size(); ++i) {
+        if (revealedLetters_[i]) {
+            setColor(COLOR_LETTER);
+            std::cout << activeWord_->word[i] << ' ';
+        } else {
+            setColor(COLOR_DEFAULT);
+            std::cout << "_ ";
+        }
+    }
+    setColor(COLOR_DEFAULT);
+    std::cout << "Definition: " << activeWord_->definition << "\n";
     std::cout << "Guess the word: ";
+
     std::string guess = readLineTrimmedSafe();
     std::string upperGuess = guess;
     std::transform(upperGuess.begin(), upperGuess.end(), upperGuess.begin(),
                    [](unsigned char c) { return
                            static_cast<char>(std::toupper(c)); });
-    if (upperGuess == targetWord_) {
+    if (upperGuess == activeWord_->word) {
         int revealed = countRevealedLetters();
         scoreMultiplier_ = getScoreMultiplier(revealed);
         char openedSymbol = getOpenedDoorSymbol();
@@ -403,7 +423,7 @@ void Game::showVictoryScreen(bool& restartFlag, bool& exitFlag) {
     std::cout << "Base score: " << baseScore << "\n";
     std::cout << "Multiplier: x" << scoreMultiplier_ << "\n";
     std::cout << "Final score: " << finalScore << "\n";
-    std::cout << "Word: " << targetWord_ << " - " << targetDefinition_ << "\n";
+    std::cout << "Word: " << activeWord_->word << " - " << activeWord_->definition << "\n";
     std::cout << "========================================\n";
     setColor(COLOR_DEFAULT);
     while (true) {

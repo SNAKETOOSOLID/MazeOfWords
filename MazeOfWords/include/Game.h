@@ -9,13 +9,18 @@
 #include <vector>
 #include <memory>
 
+struct ActiveWordInfo {
+    std::string word;
+    std::string definition;
+};
+
 class Game {
     Maze maze_;
     Player player_{1, 1};
     std::vector<std::unique_ptr<Hint>> hints_;
     std::unique_ptr<FinalDoor> finalDoor_;
     WordManager wordManager_;
-
+    std::unique_ptr<ActiveWordInfo> activeWord_;
     std::string targetWord_;
     std::string targetDefinition_;
     std::vector<bool> revealedLetters_;
