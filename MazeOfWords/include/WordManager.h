@@ -32,19 +32,17 @@ public:
     const std::string& getTargetDefinition() const {
         return currentEntry_.definition;
     }
-    std::optional<size_t> getRandomHiddenIndex(const std::vector<bool>&
-    revealed) {
+    std::optional<size_t> getRandomHiddenIndex(const std::vector<bool>& revealed) {
         std::vector<size_t> hidden;
         for (size_t i = 0; i < currentEntry_.word.size(); ++i) {
             if (!revealed[i]) {
                 hidden.push_back(i);
             }
-            if (hidden.empty()) {
-                return std::nullopt;
-            }
         }
-        std::uniform_int_distribution<> dist(0,
-        static_cast<int>(hidden.size()) - 1);
+        if (hidden.empty()) {
+            return std::nullopt;
+        }
+        std::uniform_int_distribution<> dist(0, static_cast<int>(hidden.size()) - 1);
         return hidden[dist(gen_)];
     }
 };
