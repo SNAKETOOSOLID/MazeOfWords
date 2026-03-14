@@ -486,7 +486,9 @@ int Game::getScoreMultiplier(int revealed) const {
 void Game::saveGameResult() {
     int baseScore = std::max(0, MAX_SCORE - stepCounter_ * STEP_PENALTY);
     int finalScore = baseScore * scoreMultiplier_;
-
+/* We use shared_ptr here because the same result is needed in two places:
+ in the full results history and as the current best result.
+ unique_ptr would not fit, since it allows only one owner */
     auto result = std::make_shared<GameResult>(GameResult{
         activeWord_->word,
         activeWord_->definition,
