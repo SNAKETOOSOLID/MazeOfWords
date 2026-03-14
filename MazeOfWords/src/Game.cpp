@@ -223,7 +223,7 @@ void Game::drawFull() const {
     setColor(COLOR_FINAL_DOOR_CLOSED);
     std::cout<<"X = closed";
     setColor(COLOR_FINAL_DOOR_OPEN);
-    std::cout<<"/ = open\n";
+    std::cout<<" / = open\n";
     setColor(COLOR_DEFAULT);
     std::cout << "Message: " << statusMessage_ << "\n";
 }
